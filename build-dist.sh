@@ -25,22 +25,33 @@ echo ""
 echo "Building for macOS (ARM64)..."
 dotnet publish -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 mkdir -p "$DIST_DIR/macos-arm64"
-cp -r bin/Release/net9.0/osx-arm64/publish/* "$DIST_DIR/macos-arm64/"
+# Copy only the executable, excluding .pdb and other debug files
+find bin/Release/net9.0/osx-arm64/publish -maxdepth 1 -type f ! -name "*.pdb" ! -name "*.pdf" -exec cp {} "$DIST_DIR/macos-arm64/" \;
 echo "✓ macOS ARM64 build complete"
 
 # Build for macOS (x64 - Intel)
 echo "Building for macOS (x64 - Intel)..."
 dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 mkdir -p "$DIST_DIR/macos-x64"
-cp -r bin/Release/net9.0/osx-x64/publish/* "$DIST_DIR/macos-x64/"
+# Copy only the executable, excluding .pdb and other debug files
+find bin/Release/net9.0/osx-x64/publish -maxdepth 1 -type f ! -name "*.pdb" ! -name "*.pdf" -exec cp {} "$DIST_DIR/macos-x64/" \;
 echo "✓ macOS x64 build complete"
 
 # Build for Windows (x64)
 echo "Building for Windows (x64)..."
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 mkdir -p "$DIST_DIR/win-x64"
-cp -r bin/Release/net9.0/win-x64/publish/* "$DIST_DIR/win-x64/"
+# Copy only the executable, excluding .pdb and other debug files
+find bin/Release/net9.0/win-x64/publish -maxdepth 1 -type f ! -name "*.pdb" ! -name "*.pdf" -exec cp {} "$DIST_DIR/win-x64/" \;
 echo "✓ Windows x64 build complete"
+
+# Copy VERSION.txt to each distribution if it exists
+if [ -f "VERSION.txt" ]; then
+  echo "Including VERSION.txt in distributions..."
+  cp VERSION.txt "$DIST_DIR/macos-arm64/"
+  cp VERSION.txt "$DIST_DIR/macos-x64/"
+  cp VERSION.txt "$DIST_DIR/win-x64/"
+fi
 
 # Create zip files
 echo ""

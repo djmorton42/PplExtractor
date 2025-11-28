@@ -24,7 +24,8 @@ if (arguments.ShowHelp)
 
 if (arguments.InputFile == null)
 {
-    Console.Error.WriteLine("Error: Input file is required.");
+    Console.WriteLine();
+    parser.ShowHelp();
     return 1;
 }
 
@@ -103,7 +104,8 @@ public class ArgumentParser
             
             if (xlsFiles.Count == 0)
             {
-                throw new Exception("No input file provided and no .xls/.xlsx files found in current directory.");
+                // No file found - return null to trigger help message
+                result.InputFile = null;
             }
             else if (xlsFiles.Count == 1)
             {
