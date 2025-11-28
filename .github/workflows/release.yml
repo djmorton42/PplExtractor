@@ -1,0 +1,110 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Version bump type"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed for pushing tags and creating releases
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # required to get tags
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $latest_tag"
+          echo "tag=$latest_tag" >> $GITHUB_OUTPUT
+
+      - name: Calculate next version
+        id: bump
+        run: |
+          bump_type=${{ github.event.inputs.bump }}
+          current=${{ steps.get_tag.outputs.tag }}
+          current=${current#v}
+
+          IFS='.' read -r major minor patch <<< "$current"
+
+          case $bump_type in
+            major)
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            minor)
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            patch)
+              patch=$((patch + 1))
+              ;;
+          esac
+
+          new_version="v$major.$minor.$patch"
+          echo "New version: $new_version"
+          echo "version=$new_version" >> $GITHUB_OUTPUT
+
+      - name: Create VERSION.txt file
+        run: |
+          VERSION_WITHOUT_V=${{ steps.bump.outputs.version }}
+          VERSION_WITHOUT_V=${VERSION_WITHOUT_V#v}
+          echo "$VERSION_WITHOUT_V" > VERSION.txt
+          echo "Created VERSION.txt with version: $VERSION_WITHOUT_V"
+
+      - name: Build project
+        run: |
+          chmod +x build-dist.sh
+          ./build-dist.sh
+
+      - name: Rename zip files with version
+        run: |
+          VERSION_WITHOUT_V=${{ steps.bump.outputs.version }}
+          VERSION_WITHOUT_V=${VERSION_WITHOUT_V#v}
+          mv PplExtractor-macos-arm64.zip "PplExtractor-v${VERSION_WITHOUT_V}-macos-arm64.zip"
+          mv PplExtractor-macos-x64.zip "PplExtractor-v${VERSION_WITHOUT_V}-macos-x64.zip"
+          mv PplExtractor-win-x64.zip "PplExtractor-v${VERSION_WITHOUT_V}-win-x64.zip"
+          echo "macos_arm64_zip_name=PplExtractor-v${VERSION_WITHOUT_V}-macos-arm64.zip" >> $GITHUB_OUTPUT
+          echo "macos_x64_zip_name=PplExtractor-v${VERSION_WITHOUT_V}-macos-x64.zip" >> $GITHUB_OUTPUT
+          echo "win_x64_zip_name=PplExtractor-v${VERSION_WITHOUT_V}-win-x64.zip" >> $GITHUB_OUTPUT
+        id: rename_zips
+
+      - name: Create new tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a ${{ steps.bump.outputs.version }} -m "Release ${{ steps.bump.outputs.version }}"
+          git push origin ${{ steps.bump.outputs.version }}
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.bump.outputs.version }}
+          name: Release ${{ steps.bump.outputs.version }}
+          files: |
+            ${{ steps.rename_zips.outputs.macos_arm64_zip_name }}
+            ${{ steps.rename_zips.outputs.macos_x64_zip_name }}
+            ${{ steps.rename_zips.outputs.win_x64_zip_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
