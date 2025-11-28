@@ -23,21 +23,21 @@ echo ""
 
 # Build for macOS (ARM64)
 echo "Building for macOS (ARM64)..."
-dotnet publish -c Release -r osx-arm64 --self-contained false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+dotnet publish -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 mkdir -p "$DIST_DIR/macos-arm64"
 cp -r bin/Release/net9.0/osx-arm64/publish/* "$DIST_DIR/macos-arm64/"
 echo "✓ macOS ARM64 build complete"
 
 # Build for macOS (x64 - Intel)
 echo "Building for macOS (x64 - Intel)..."
-dotnet publish -c Release -r osx-x64 --self-contained false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 mkdir -p "$DIST_DIR/macos-x64"
 cp -r bin/Release/net9.0/osx-x64/publish/* "$DIST_DIR/macos-x64/"
 echo "✓ macOS x64 build complete"
 
 # Build for Windows (x64)
 echo "Building for Windows (x64)..."
-dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 mkdir -p "$DIST_DIR/win-x64"
 cp -r bin/Release/net9.0/win-x64/publish/* "$DIST_DIR/win-x64/"
 echo "✓ Windows x64 build complete"
@@ -72,6 +72,6 @@ echo "  - PplExtractor-macos-arm64.zip"
 echo "  - PplExtractor-macos-x64.zip"
 echo "  - PplExtractor-win-x64.zip"
 echo ""
-echo "Each zip contains a single-file executable that requires .NET 9.0 runtime to be installed."
+echo "Each zip contains a standalone single-file executable with .NET runtime included."
 
 
