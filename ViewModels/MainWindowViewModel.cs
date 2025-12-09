@@ -33,6 +33,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private string _statusMessage = string.Empty;
 
+    [ObservableProperty]
+    private ObservableCollection<ParticipantRecord> _extractedRacers = new();
+
     public bool CanExtract => !string.IsNullOrEmpty(SelectedExcelFile) 
         && !string.IsNullOrEmpty(SelectedOutputDirectory)
         && !string.IsNullOrEmpty(SelectedSheet)
@@ -41,6 +44,8 @@ public partial class MainWindowViewModel : ViewModelBase
     partial void OnSelectedExcelFileChanged(string value)
     {
         OnPropertyChanged(nameof(CanExtract));
+        // Clear extracted racers when a new file is selected
+        ExtractedRacers.Clear();
         LoadSheets();
     }
 
@@ -65,6 +70,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             AvailableSheets.Clear();
             SelectedSheet = null;
+            ExtractedRacers.Clear();
             return;
         }
 
@@ -201,6 +207,13 @@ public partial class MainWindowViewModel : ViewModelBase
             var outputFile = Path.Combine(SelectedOutputDirectory, "Lynx.ppl");
             var extractor = new LynxExtractor();
             var result = await extractor.ExtractAsync(SelectedExcelFile, SelectedSheet, outputFile);
+            
+            // Update the extracted racers collection
+            ExtractedRacers.Clear();
+            foreach (var record in result)
+            {
+                ExtractedRacers.Add(record);
+            }
             
             StatusMessage = $"✓ Created {Path.GetFileName(outputFile)} with {result.Count} entries";
         }
