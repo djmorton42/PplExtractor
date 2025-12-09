@@ -1,0 +1,91 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PplExtractor.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        x:Class="PplExtractor.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="PplExtractor"
+        Width="600" Height="500"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Excel File Selection -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Excel File:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBox Grid.Column="1" Text="{Binding SelectedExcelFile}" 
+                     VerticalAlignment="Center"
+                     Margin="0,0,10,0"
+                     IsReadOnly="True"/>
+            <Button Grid.Column="2" Content="Browse..." 
+                    Click="SelectExcelFile_Click"
+                    VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Output Directory Selection -->
+        <Grid Grid.Row="1" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Output Directory:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBox Grid.Column="1" Text="{Binding SelectedOutputDirectory}" 
+                     VerticalAlignment="Center"
+                     Margin="0,0,10,0"
+                     IsReadOnly="True"/>
+            <Button Grid.Column="2" Content="Browse..." 
+                    Click="SelectOutputDirectory_Click"
+                    VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Sheet Selection -->
+        <TextBlock Grid.Row="2" Text="Available Sheets:" Margin="0,0,0,5"/>
+        <ListBox Grid.Row="3" 
+                 ItemsSource="{Binding AvailableSheets}"
+                 SelectedItem="{Binding SelectedSheet}"
+                 MaxHeight="150"
+                 Margin="0,0,0,15"/>
+
+        <!-- Status Message -->
+        <TextBlock Grid.Row="4" 
+                   Text="{Binding StatusMessage}"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Top"
+                   Margin="0,0,0,15"/>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+            <Button Content="Extract Racers" 
+                    Command="{Binding ExtractRacersCommand}"
+                    IsEnabled="{Binding CanExtract}"
+                    Margin="0,0,10,0"
+                    MinWidth="120"/>
+            <Button Content="Close" 
+                    Click="CloseButton_Click"
+                    MinWidth="120"/>
+        </StackPanel>
+    </Grid>
+
+</Window>
+

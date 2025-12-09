@@ -1,0 +1,12 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PplExtractor.App"
+             xmlns:local="using:PplExtractor"
+             RequestedThemeVariant="Light">
+             <!-- "Light" ThemeVariant forces light theme regardless of system theme. -->
+
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>
+
