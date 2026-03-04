@@ -8,6 +8,7 @@ using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
 using ExcelDataReader;
+using PplExtractor.Models;
 
 namespace PplExtractor;
 
@@ -21,7 +22,12 @@ public class ParticipantRecord
 
 public class LynxExtractor
 {
-    public async Task<List<ParticipantRecord>> ExtractAsync(string inputFile, string? sheetName, string outputFile)
+    public async Task<List<ParticipantRecord>> ExtractAsync(
+        string inputFile,
+        string? sheetName,
+        string outputFile,
+        bool addRelayTeams = false,
+        IReadOnlyList<RelayTeamEntry>? relayTeams = null)
     {
         if (!File.Exists(inputFile))
         {
@@ -164,6 +170,19 @@ public class LynxExtractor
             csv.WriteField(record.FirstName.Trim());
             csv.WriteField(record.Club.Trim());
             await csv.NextRecordAsync();
+        }
+
+        // Append relay teams if requested (format: key, name, unused, affiliation)
+        if (addRelayTeams && relayTeams != null && relayTeams.Count > 0)
+        {
+            foreach (var team in relayTeams)
+            {
+                csv.WriteField(team.Key.Trim());
+                csv.WriteField(team.Name.Trim());
+                csv.WriteField(team.Unused.Trim());
+                csv.WriteField(team.Affiliation.Trim());
+                await csv.NextRecordAsync();
+            }
         }
 
         return records;

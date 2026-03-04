@@ -10,6 +10,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ExcelDataReader;
 using System.Data;
+using PplExtractor.Models;
+using PplExtractor.Views;
 
 namespace PplExtractor.ViewModels;
 
@@ -35,6 +37,12 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<ParticipantRecord> _extractedRacers = new();
+
+    [ObservableProperty]
+    private bool _addRelayTeams;
+
+    [ObservableProperty]
+    private ObservableCollection<RelayTeamEntry> _relayTeams = new(RelayTeamEntry.GetDefaults());
 
     public bool CanExtract => !string.IsNullOrEmpty(SelectedExcelFile) 
         && !string.IsNullOrEmpty(SelectedOutputDirectory)
@@ -206,7 +214,12 @@ public partial class MainWindowViewModel : ViewModelBase
 
             var outputFile = Path.Combine(SelectedOutputDirectory, "Lynx.ppl");
             var extractor = new LynxExtractor();
-            var result = await extractor.ExtractAsync(SelectedExcelFile, SelectedSheet, outputFile);
+            var result = await extractor.ExtractAsync(
+                SelectedExcelFile,
+                SelectedSheet,
+                outputFile,
+                addRelayTeams: AddRelayTeams,
+                relayTeams: AddRelayTeams ? RelayTeams : null);
             
             // Update the extracted racers collection
             ExtractedRacers.Clear();
@@ -215,7 +228,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 ExtractedRacers.Add(record);
             }
             
-            StatusMessage = $"✓ Created {Path.GetFileName(outputFile)} with {result.Count} entries";
+            var entryCount = result.Count + (AddRelayTeams ? RelayTeams.Count : 0);
+            StatusMessage = $"✓ Created {Path.GetFileName(outputFile)} with {entryCount} entries";
         }
         catch (Exception ex)
         {
@@ -224,6 +238,25 @@ public partial class MainWindowViewModel : ViewModelBase
         finally
         {
             IsExtracting = false;
+        }
+    }
+
+    /// <summary>
+    /// Opens the Edit Relay Teams dialog. Call from view with the main window as owner.
+    /// </summary>
+    public async Task OpenEditRelayTeamsAsync(Window owner)
+    {
+        var initialCopy = RelayTeams.Select(t => t.CreateCopy()).ToList();
+        var vm = new EditRelayTeamsViewModel(initialCopy);
+        var dialog = new EditRelayTeamsWindow { DataContext = vm };
+        var result = await dialog.ShowDialog<List<RelayTeamEntry>?>(owner);
+        if (result != null)
+        {
+            RelayTeams.Clear();
+            foreach (var entry in result)
+            {
+                RelayTeams.Add(entry);
+            }
         }
     }
 }

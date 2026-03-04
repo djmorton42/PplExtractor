@@ -21,6 +21,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -68,8 +69,19 @@
                  MaxHeight="100"
                  Margin="0,0,0,15"/>
 
+        <!-- Relay Teams option -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,0,0,15" VerticalAlignment="Center">
+            <CheckBox Content="Add relay teams to PPL file" 
+                      IsChecked="{Binding AddRelayTeams}"
+                      Margin="0,0,15,0"
+                      VerticalAlignment="Center"/>
+            <Button Content="Edit relay teams..."
+                    Click="EditRelayTeams_Click"
+                    MinWidth="140"/>
+        </StackPanel>
+
         <!-- Extracted Racers DataGrid -->
-        <Border Grid.Row="4" 
+        <Border Grid.Row="5" 
                 BorderBrush="LightGray" 
                 BorderThickness="1" 
                 Margin="0,0,0,15"
@@ -115,14 +127,14 @@
         </Border>
 
         <!-- Status Message -->
-        <TextBlock Grid.Row="5" 
+        <TextBlock Grid.Row="6" 
                    Text="{Binding StatusMessage}"
                    TextWrapping="Wrap"
                    VerticalAlignment="Top"
                    Margin="0,0,0,15"/>
 
         <!-- Buttons -->
-        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
             <Button Content="Extract Racers" 
                     Command="{Binding ExtractRacersCommand}"
                     IsEnabled="{Binding CanExtract}"

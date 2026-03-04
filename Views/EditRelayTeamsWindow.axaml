@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PplExtractor.ViewModels"
+        xmlns:dg="using:Avalonia.Controls"
+        xmlns:models="using:PplExtractor.Models"
+        x:Class="PplExtractor.Views.EditRelayTeamsWindow"
+        x:DataType="vm:EditRelayTeamsViewModel"
+        Title="Edit Relay Teams"
+        Width="550" Height="450"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" MinHeight="200"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <dg:DataGrid Grid.Row="0"
+                     ItemsSource="{Binding Teams}"
+                     SelectedItem="{Binding SelectedTeam}"
+                     AutoGenerateColumns="False"
+                     CanUserReorderColumns="False"
+                     CanUserResizeColumns="True"
+                     CanUserSortColumns="True"
+                     GridLinesVisibility="Horizontal"
+                     HeadersVisibility="Column"
+                     IsReadOnly="False"
+                     Margin="0,0,0,10">
+            <dg:DataGrid.Columns>
+                <DataGridTextColumn Header="Key" Binding="{Binding Key, Mode=TwoWay}" Width="120"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}" Width="200"/>
+                <DataGridTextColumn Header="Affiliation" Binding="{Binding Affiliation, Mode=TwoWay}" Width="150"/>
+            </dg:DataGrid.Columns>
+        </dg:DataGrid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+            <Button Content="Add" Command="{Binding AddTeamCommand}" Margin="0,0,10,0" MinWidth="70"/>
+            <Button Content="Remove" Command="{Binding RemoveTeamCommand}" Margin="0,0,10,0" MinWidth="70"/>
+            <Button Content="Reset to defaults" Command="{Binding ResetToDefaultsCommand}" MinWidth="120"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="OK" Click="OkButton_Click" Margin="0,0,10,0" MinWidth="80"/>
+            <Button Content="Cancel" Click="CancelButton_Click" MinWidth="80"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -31,5 +31,13 @@ public partial class MainWindow : Window
             await viewModel.SelectOutputDirectoryAsync(this);
         }
     }
+
+    private async void EditRelayTeams_Click(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel viewModel)
+        {
+            await viewModel.OpenEditRelayTeamsAsync(this);
+        }
+    }
 }
 
