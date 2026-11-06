@@ -27,7 +27,8 @@ public class LynxExtractor
         string? sheetName,
         string outputFile,
         bool addRelayTeams = false,
-        IReadOnlyList<RelayTeamEntry>? relayTeams = null)
+        IReadOnlyList<RelayTeamEntry>? relayTeams = null,
+        FirstNameFormat firstNameFormat = FirstNameFormat.All)
     {
         if (!File.Exists(inputFile))
         {
@@ -120,6 +121,9 @@ public class LynxExtractor
             var lastName = row[lastNameCol!]?.ToString()?.Trim();
             var firstName = row[firstNameCol!]?.ToString()?.Trim();
             var club = row[clubCol!]?.ToString()?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(firstName))
+                firstName = FirstNameFormatter.Apply(firstName, firstNameFormat);
 
             // Skip blank rows
             if (string.IsNullOrWhiteSpace(helmetStr) && 

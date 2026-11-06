@@ -42,6 +42,34 @@ public partial class MainWindowViewModel : ViewModelBase
     private bool _addRelayTeams;
 
     [ObservableProperty]
+    private FirstNameFormat _firstNameFormat = FirstNameFormat.All;
+
+    public bool IsFirstNameAll
+    {
+        get => FirstNameFormat == FirstNameFormat.All;
+        set { if (value) FirstNameFormat = FirstNameFormat.All; }
+    }
+
+    public bool IsFirstNameCommon
+    {
+        get => FirstNameFormat == FirstNameFormat.Common;
+        set { if (value) FirstNameFormat = FirstNameFormat.Common; }
+    }
+
+    public bool IsFirstNameGiven
+    {
+        get => FirstNameFormat == FirstNameFormat.Given;
+        set { if (value) FirstNameFormat = FirstNameFormat.Given; }
+    }
+
+    partial void OnFirstNameFormatChanged(FirstNameFormat value)
+    {
+        OnPropertyChanged(nameof(IsFirstNameAll));
+        OnPropertyChanged(nameof(IsFirstNameCommon));
+        OnPropertyChanged(nameof(IsFirstNameGiven));
+    }
+
+    [ObservableProperty]
     private ObservableCollection<RelayTeamEntry> _relayTeams = new(RelayTeamEntry.GetDefaults());
 
     public bool CanExtract => !string.IsNullOrEmpty(SelectedExcelFile) 
@@ -219,7 +247,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 SelectedSheet,
                 outputFile,
                 addRelayTeams: AddRelayTeams,
-                relayTeams: AddRelayTeams ? RelayTeams : null);
+                relayTeams: AddRelayTeams ? RelayTeams : null,
+                firstNameFormat: FirstNameFormat);
             
             // Update the extracted racers collection
             ExtractedRacers.Clear();

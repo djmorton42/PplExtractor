@@ -4,11 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dg="using:Avalonia.Controls"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="760"
         x:Class="PplExtractor.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="PplExtractor"
-        Width="800" Height="700"
+        Width="800" Height="760"
         WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
@@ -17,6 +17,7 @@
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -80,8 +81,32 @@
                     MinWidth="140"/>
         </StackPanel>
 
+        <!-- First name format -->
+        <Border Grid.Row="5"
+                BorderBrush="LightGray"
+                BorderThickness="1"
+                Padding="10,8"
+                Margin="0,0,0,15">
+            <StackPanel>
+                <TextBlock Text="First name:" Margin="0,0,0,6"/>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Content="All"
+                                 GroupName="FirstNameFormat"
+                                 IsChecked="{Binding IsFirstNameAll}"
+                                 Margin="0,0,20,0"/>
+                    <RadioButton Content="Common"
+                                 GroupName="FirstNameFormat"
+                                 IsChecked="{Binding IsFirstNameCommon}"
+                                 Margin="0,0,20,0"/>
+                    <RadioButton Content="Given (Brackets)"
+                                 GroupName="FirstNameFormat"
+                                 IsChecked="{Binding IsFirstNameGiven}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
         <!-- Extracted Racers DataGrid -->
-        <Border Grid.Row="5" 
+        <Border Grid.Row="6" 
                 BorderBrush="LightGray" 
                 BorderThickness="1" 
                 Margin="0,0,0,15"
@@ -127,14 +152,14 @@
         </Border>
 
         <!-- Status Message -->
-        <TextBlock Grid.Row="6" 
+        <TextBlock Grid.Row="7" 
                    Text="{Binding StatusMessage}"
                    TextWrapping="Wrap"
                    VerticalAlignment="Top"
                    Margin="0,0,0,15"/>
 
         <!-- Buttons -->
-        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+        <StackPanel Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
             <Button Content="Extract Racers" 
                     Command="{Binding ExtractRacersCommand}"
                     IsEnabled="{Binding CanExtract}"
